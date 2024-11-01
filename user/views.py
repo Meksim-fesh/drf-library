@@ -1,6 +1,6 @@
 from rest_framework import generics
 
-from user.serializers import UserSerializer
+from user.serializers import UserManageSerializer, UserSerializer
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -8,7 +8,7 @@ class CreateUserView(generics.CreateAPIView):
 
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
-    serializer_class=UserSerializer
+    serializer_class = UserManageSerializer
 
     def get_object(self):
         return self.request.user
