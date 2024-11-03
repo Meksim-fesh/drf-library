@@ -5,6 +5,7 @@ from borrowing.serializers import (
     BorrowingCreateSerializer,
     BorrowingDetailSerializer,
     BorrowingListSerializer,
+    BorrowingReturnSerializer,
     BorrowingSerializer,
 )
 
@@ -30,3 +31,8 @@ class BorrowingListCreateView(generics.ListCreateAPIView):
 class BorrowingRetrieveView(generics.RetrieveUpdateAPIView):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingDetailSerializer
+
+
+class BorrowingReturnView(generics.UpdateAPIView):
+    queryset = Borrowing.objects.all()
+    serializer_class = BorrowingReturnSerializer
