@@ -54,3 +54,15 @@ class BorrowingReturnSerializer(BorrowingSerializer):
     class Meta:
         model = Borrowing
         fields = []
+
+    def update(self, instance, validated_data):
+        actual_return_date = instance.actual_return_date
+        if actual_return_date:
+            raise serializers.ValidationError(
+                "The borrowing has already been returned"
+            )
+
+        actual_return_date = date.today()
+        validated_data["actual_return_date"] = actual_return_date
+
+        return super().update(instance, validated_data)
