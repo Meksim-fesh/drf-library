@@ -1,3 +1,5 @@
+from datetime import date
+
 from rest_framework import serializers
 
 from book.serializers import BookListSerializer, BookSerializer
@@ -46,3 +48,9 @@ class BorrowingCreateSerializer(BorrowingSerializer):
         book.inventory = book.inventory - 1
         book.save()
         return attrs
+
+
+class BorrowingReturnSerializer(BorrowingSerializer):
+    class Meta:
+        model = Borrowing
+        fields = []
