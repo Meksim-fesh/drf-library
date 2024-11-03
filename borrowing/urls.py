@@ -1,11 +1,16 @@
-
 from django.urls import path
 
-from borrowing.views import BorrowingListView, BorrowingRetrieveView
-
+from borrowing.views import (
+    BorrowingListCreateView,
+    BorrowingRetrieveView,
+)
 
 urlpatterns = [
-    path("borrowings/", BorrowingListView.as_view(), name="borrowing-list"),
+    path(
+        "borrowings/",
+        BorrowingListCreateView.as_view(),
+        name="borrowing-list"
+    ),
     path(
         "borrowings/<int:pk>/",
         BorrowingRetrieveView.as_view(),
