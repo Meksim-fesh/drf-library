@@ -62,6 +62,10 @@ class BorrowingReturnSerializer(BorrowingSerializer):
                 "The borrowing has already been returned"
             )
 
+        book = instance.book
+        book.inventory = book.inventory + 1
+        book.save()
+
         actual_return_date = date.today()
         validated_data["actual_return_date"] = actual_return_date
 
