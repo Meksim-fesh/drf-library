@@ -9,7 +9,7 @@ from borrowing.serializers import (
 )
 
 
-class BorrowingListView(generics.ListCreateAPIView):
+class BorrowingListCreateView(generics.ListCreateAPIView):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingListSerializer
 
