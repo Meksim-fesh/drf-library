@@ -5,14 +5,17 @@ import requests
 from borrowing.models import Borrowing
 
 
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-USER_TO_SEND_NOTIFICATION_ID = os.environ.get("TELEGRAM_USER_ID")
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", False)
+USER_TO_SEND_NOTIFICATION_ID = os.environ.get("TELEGRAM_USER_ID", False)
 DEFAULT_HEADERS = {
     "Content-Type": "application/json",
 }
 
 
 def send_notification(borrowing: Borrowing) -> requests.Response:
+    if not (TELEGRAM_TOKEN and USER_TO_SEND_NOTIFICATION_ID):
+        return
+
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 
     payload = {
