@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from book.serializers import BookListSerializer, BookSerializer
 from borrowing.models import Borrowing
+from borrowing.telegram import send_notification
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
@@ -48,6 +49,11 @@ class BorrowingCreateSerializer(BorrowingSerializer):
         book.inventory = book.inventory - 1
         book.save()
         return attrs
+
+    def create(self, validated_data):
+        borrowing = super().create(validated_data)
+        send_notification(borrowing)
+        return borrowing
 
 
 class BorrowingReturnSerializer(BorrowingSerializer):
