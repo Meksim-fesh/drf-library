@@ -3,7 +3,7 @@ from datetime import date
 from rest_framework import serializers
 
 from book.serializers import BookListSerializer, BookSerializer
-from borrowing.models import Borrowing
+from borrowing.models import Borrowing, Payment
 from borrowing.telegram import send_notification
 
 
@@ -76,3 +76,17 @@ class BorrowingReturnSerializer(BorrowingSerializer):
         validated_data["actual_return_date"] = actual_return_date
 
         return super().update(instance, validated_data)
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = [
+            "id",
+            "status",
+            "type",
+            "borrowing",
+            "session_url",
+            "session_id",
+            "money_to_pay",
+        ]
