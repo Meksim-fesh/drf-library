@@ -4,6 +4,8 @@ from borrowing.views import (
     BorrowingListCreateView,
     BorrowingRetrieveView,
     BorrowingReturnView,
+    PaymentDetailView,
+    PaymentListView,
 )
 
 urlpatterns = [
@@ -21,6 +23,16 @@ urlpatterns = [
         "borrowings/<int:pk>/",
         BorrowingRetrieveView.as_view(),
         name="borrowing-detail"
+    ),
+    path(
+        "payments/",
+        PaymentListView.as_view(),
+        name="payment-list",
+    ),
+    path(
+        "payments/<int:pk>/",
+        PaymentDetailView.as_view(),
+        name="payment-detail",
     ),
 ]
 

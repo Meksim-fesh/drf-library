@@ -1,12 +1,14 @@
 from rest_framework import generics
 
-from borrowing.models import Borrowing
+from borrowing.models import Borrowing, Payment
 from borrowing.serializers import (
     BorrowingCreateSerializer,
     BorrowingDetailSerializer,
     BorrowingListSerializer,
     BorrowingReturnSerializer,
     BorrowingSerializer,
+    PaymentDetailSerializer,
+    PaymentListSerializer,
 )
 
 
@@ -36,3 +38,13 @@ class BorrowingRetrieveView(generics.RetrieveUpdateAPIView):
 class BorrowingReturnView(generics.UpdateAPIView):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingReturnSerializer
+
+
+class PaymentListView(generics.ListAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentListSerializer
+
+
+class PaymentDetailView(generics.RetrieveAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentDetailSerializer
