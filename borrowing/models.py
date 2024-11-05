@@ -16,3 +16,24 @@ class Borrowing(models.Model):
 
     def __str__(self):
         return f"{self.user} borrows {self.book}"
+
+
+class Payment(models.Model):
+
+    class StatusChoice(models.TextChoices):
+        PENDING = "Pending"
+        PAID = "Paid"
+
+    class TypeChoice(models.TextChoices):
+        PAYMENT = "Payment"
+        FINE = "Fine"
+
+    status = models.CharField(choices=StatusChoice, max_length=7)
+    type = models.CharField(choices=TypeChoice, max_length=7)
+    borrowing = models.ForeignKey(Borrowing, on_delete=models.CASCADE)
+    session_url = models.URLField()
+    session_id = models.PositiveIntegerField()
+    money_to_pay = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.status} {self.type} session"
