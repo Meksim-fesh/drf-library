@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from book.serializers import BookListSerializer, BookSerializer
 from borrowing.models import Borrowing, Payment
+from borrowing.stripe_payment import create_checkout_session
 from borrowing.telegram import send_notification
 
 
@@ -25,11 +26,39 @@ class BorrowingListSerializer(BorrowingSerializer):
     user = serializers.SlugRelatedField(slug_field="email", read_only=True)
 
 
+class PaymentBorrowingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = [
+            "id",
+            "status",
+            "type",
+            "session_url",
+            "session_id",
+            "money_to_pay",
+        ]
+
+
 class BorrowingDetailSerializer(BorrowingListSerializer):
     book = BookSerializer(read_only=True)
+    payments = PaymentBorrowingSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Borrowing
+        fields = (
+            "id",
+            "borrow_date",
+            "expected_return_date",
+            "actual_return_date",
+            "book",
+            "user",
+            "payments",
+        )
 
 
 class BorrowingCreateSerializer(BorrowingSerializer):
+    checkout_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Borrowing
         fields = (
@@ -37,8 +66,13 @@ class BorrowingCreateSerializer(BorrowingSerializer):
             "expected_return_date",
             "book",
             "user",
+            "checkout_url",
         )
         read_only_fields = ("borrow_date", "user")
+
+    def get_checkout_url(self, obj):
+        response = create_checkout_session(obj)
+        return response["url"]
 
     def validate(self, attrs):
         book = attrs["book"]
