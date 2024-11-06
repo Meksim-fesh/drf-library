@@ -26,8 +26,34 @@ class BorrowingListSerializer(BorrowingSerializer):
     user = serializers.SlugRelatedField(slug_field="email", read_only=True)
 
 
+class PaymentBorrowingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = [
+            "id",
+            "status",
+            "type",
+            "session_url",
+            "session_id",
+            "money_to_pay",
+        ]
+
+
 class BorrowingDetailSerializer(BorrowingListSerializer):
     book = BookSerializer(read_only=True)
+    payments = PaymentBorrowingSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Borrowing
+        fields = (
+            "id",
+            "borrow_date",
+            "expected_return_date",
+            "actual_return_date",
+            "book",
+            "user",
+            "payments",
+        )
 
 
 class BorrowingCreateSerializer(BorrowingSerializer):
