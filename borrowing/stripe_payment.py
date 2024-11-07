@@ -42,7 +42,10 @@ def create_checkout_session(borrowing: Borrowing) -> stripe.checkout.Session:
             f"{BASE_URL}"
             f"{reverse("borrowing:payment-success", args=[payment.id])}"
         ),
-        cancel_url="http://localhost:4242/cancel",
+        cancel_url=(
+            f"{BASE_URL}"
+            f"{reverse("borrowing:payment-cancel", args=[payment.id])}"
+        ),
     )
 
     payment.session_url = session.url

@@ -10,7 +10,7 @@ from borrowing.serializers import (
     BorrowingSerializer,
     PaymentDetailSerializer,
     PaymentListSerializer,
-    PaymentSuccessSerializer,
+    PaymentSuccessCancelSerializer,
 )
 
 
@@ -54,7 +54,7 @@ class PaymentDetailView(generics.RetrieveAPIView):
 
 class PaymentSuccessView(generics.GenericAPIView):
     queryset = Payment.objects.all()
-    serializer_class = PaymentSuccessSerializer
+    serializer_class = PaymentSuccessCancelSerializer
 
     def patch(self, request, *args, **kwargs):
 
@@ -63,3 +63,19 @@ class PaymentSuccessView(generics.GenericAPIView):
         instance.save()
 
         return Response(data="Success", status=status.HTTP_200_OK)
+
+
+class PaymentCancelView(generics.GenericAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSuccessCancelSerializer
+
+    def get(self, request, *args, **kwargs) -> Response:
+
+        data_str = (
+            "Payment was canceld. You can try to pay again within 24 hours."
+        )
+
+        return Response(
+            data=data_str,
+            status=status.HTTP_402_PAYMENT_REQUIRED
+        )
