@@ -13,8 +13,8 @@ stripe.api_key = os.environ.get("STRIPE_API_KEY", False)
 def create_checkout_session(borrowing: Borrowing) -> stripe.checkout.Session:
     amount_of_days = borrowing.expected_return_date - borrowing.borrow_date
     amount_of_days = amount_of_days.days
-    price = borrowing.book.daily_fee * amount_of_days * 100
-    stride_price = int(price)
+    price = borrowing.book.daily_fee * amount_of_days
+    stride_price = int(price * 100)
 
     data = {
         "status": "Pending",
