@@ -6,6 +6,7 @@ from borrowing.views import (
     BorrowingReturnView,
     PaymentDetailView,
     PaymentListView,
+    PaymentSuccessView,
 )
 
 urlpatterns = [
@@ -33,6 +34,11 @@ urlpatterns = [
         "payments/<int:pk>/",
         PaymentDetailView.as_view(),
         name="payment-detail",
+    ),
+    path(
+        "payments/<int:pk>/success/",
+        PaymentSuccessView.as_view(),
+        name="payment-success",
     ),
 ]
 

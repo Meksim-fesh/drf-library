@@ -141,7 +141,7 @@ class PaymentListSerializer(PaymentSerializer):
 
 
 class PaymentDetailSerializer(PaymentSerializer):
-    borrowing = BorrowingDetailSerializer(read_only=True)
+    borrowing = BorrowingListSerializer(read_only=True)
 
     class Meta:
         model = Payment
@@ -154,3 +154,9 @@ class PaymentDetailSerializer(PaymentSerializer):
             "session_id",
             "money_to_pay",
         ]
+
+
+class PaymentSuccessSerializer(PaymentSerializer):
+    class Meta:
+        model = Payment
+        fields = []
