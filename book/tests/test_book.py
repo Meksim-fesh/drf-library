@@ -125,3 +125,18 @@ class BookTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(book.title, new_title)
+
+    def test_delete_book(self):
+        book = sample_book()
+        books_amount = Book.objects.count()
+
+        self.assertEqual(books_amount, 1)
+
+        response = self.client.delete(
+            get_book_detail_url(book.id)
+        )
+
+        books_amount = Book.objects.count()
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(books_amount, 0)
