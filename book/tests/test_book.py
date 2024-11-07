@@ -12,6 +12,10 @@ from book.serializers import BookListSerializer, BookSerializer
 BOOK_LIST_URL = reverse("book:book-list")
 
 
+def get_book_detail_url(book_id: int):
+    return reverse("book:book-detail", args=[book_id])
+
+
 def sample_book(**params) -> Book:
     payload = {
         "title": "Test Title",
@@ -66,3 +70,58 @@ class BookTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, serializer.data)
+
+    def test_retrieve_book(self):
+        book = sample_book()
+        serializer = BookSerializer(book)
+
+        response = self.client.get(
+            get_book_detail_url(book.id)
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+
+    def test_put_book(self):
+        new_title = "New Test Title"
+        old_title = "Old Test Title"
+
+        book = sample_book(title=old_title)
+
+        payload = {
+            "title": new_title,
+            "author": "Test Author",
+            "cover": "Hard",
+            "inventory": 10,
+            "daily_fee": 20.99,
+        }
+
+        response = self.client.put(
+            get_book_detail_url(book.id),
+            payload,
+        )
+
+        book.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(book.title, new_title)
+
+    def test_patch_book(self):
+        new_title = "New Test Title"
+        old_title = "Old Test Title"
+
+        book = sample_book(title=old_title)
+
+        payload = {
+            "title": new_title,
+        }
+
+        response = self.client.patch(
+            get_book_detail_url(book.id),
+            payload,
+        )
+
+        book.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(book.title, new_title)
