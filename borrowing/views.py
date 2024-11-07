@@ -15,7 +15,7 @@ from borrowing.serializers import (
 
 
 class BorrowingListCreateView(generics.ListCreateAPIView):
-    queryset = Borrowing.objects.all()
+    queryset = Borrowing.objects.select_related("book", "user")
     serializer_class = BorrowingListSerializer
 
     def get_serializer_class(self):
@@ -33,7 +33,9 @@ class BorrowingListCreateView(generics.ListCreateAPIView):
 
 
 class BorrowingRetrieveView(generics.RetrieveUpdateAPIView):
-    queryset = Borrowing.objects.all()
+    queryset = Borrowing.objects.select_related(
+        "book", "user"
+    ).prefetch_related("payments")
     serializer_class = BorrowingDetailSerializer
 
 
