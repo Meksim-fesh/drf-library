@@ -45,12 +45,16 @@ class BorrowingReturnView(generics.UpdateAPIView):
 
 
 class PaymentListView(generics.ListAPIView):
-    queryset = Payment.objects.all()
+    queryset = Payment.objects.select_related(
+        "borrowing"
+    ).prefetch_related("borrowing__user", "borrowing__book")
     serializer_class = PaymentListSerializer
 
 
 class PaymentDetailView(generics.RetrieveAPIView):
-    queryset = Payment.objects.all()
+    queryset = Payment.objects.select_related(
+        "borrowing"
+    ).prefetch_related("borrowing__user", "borrowing__book")
     serializer_class = PaymentDetailSerializer
 
 
