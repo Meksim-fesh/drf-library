@@ -1,4 +1,5 @@
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
 
 from borrowing.models import Borrowing, Payment
 from borrowing.serializers import (
@@ -9,6 +10,7 @@ from borrowing.serializers import (
     BorrowingSerializer,
     PaymentDetailSerializer,
     PaymentListSerializer,
+    PaymentSuccessSerializer,
 )
 
 
@@ -48,3 +50,16 @@ class PaymentListView(generics.ListAPIView):
 class PaymentDetailView(generics.RetrieveAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentDetailSerializer
+
+
+class PaymentSuccessView(generics.GenericAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSuccessSerializer
+
+    def patch(self, request, *args, **kwargs):
+
+        instance = self.get_object()
+        instance.status = "Paid"
+        instance.save()
+
+        return Response(data="Success", status=status.HTTP_200_OK)
