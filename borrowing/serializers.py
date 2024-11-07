@@ -156,7 +156,7 @@ class PaymentDetailSerializer(PaymentSerializer):
         ]
 
 
-class PaymentSuccessSerializer(PaymentSerializer):
+class PaymentSuccessCancelSerializer(PaymentSerializer):
     class Meta:
         model = Payment
         fields = []
