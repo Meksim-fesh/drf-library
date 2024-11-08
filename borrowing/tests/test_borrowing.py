@@ -20,8 +20,8 @@ from borrowing.serializers import (
 BORROWING_LIST_URL = reverse("borrowing:borrowing-list")
 
 
-def get_detail_url(borrow_id: int):
-    return reverse("borrowing:borrowing-detail", args=[borrow_id,])
+def get_detail_url(borrow_id: int, path: str = "borrowing:borrowing-detail"):
+    return reverse(path, args=[borrow_id,])
 
 
 def generate_expected_return_date(amount_of_days: int = 5) -> date:
@@ -159,6 +159,76 @@ class BorrowingTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, serializer.data)
+
+    @patch("borrowing.serializers.BorrowingCreateSerializer.get_checkout_url")
+    @patch(
+        "borrowing.serializers.BorrowingCreateSerializer.send_notification"
+    )
+    def test_create_borrowing_decreases_book_inventory(
+        self,
+        mocked_notification,
+        mocked_session,
+    ):
+        mocked_session.return_value = "https://checkout.stripe.com/"
+        book_inventory = 5
+        user = self.user
+        book = sample_book(inventory=book_inventory)
+
+        payload = {
+            "expected_return_date": generate_expected_return_date(),
+            "book": book.id,
+            "user": user.id,
+        }
+
+        response = self.client.post(
+            BORROWING_LIST_URL,
+            payload,
+        )
+
+        book.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(book.inventory, book_inventory - 1)
+
+    def test_return_borrowing(self):
+        book_inventory = 5
+        user = self.user
+        book = sample_book(inventory=book_inventory)
+        borrowing = sample_borrowing(user, book)
+
+        response = self.client.patch(
+            get_detail_url(borrowing.id, "borrowing:borrowing-return")
+        )
+
+        book.refresh_from_db()
+        borrowing.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(borrowing.actual_return_date, date.today())
+        self.assertEqual(book.inventory, book_inventory + 1)
+
+    def test_return_borrowing_twice_forbbiden(self):
+        book_inventory = 5
+        user = self.user
+        book = sample_book(inventory=book_inventory)
+        borrowing = sample_borrowing(user, book)
+
+        response = self.client.patch(
+            get_detail_url(borrowing.id, "borrowing:borrowing-return")
+        )
+
+        book.refresh_from_db()
+        borrowing.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(borrowing.actual_return_date, date.today())
+        self.assertEqual(book.inventory, book_inventory + 1)
+
+        response = self.client.patch(
+            get_detail_url(borrowing.id, "borrowing:borrowing-return")
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_retrieve_borrowing(self):
         user = self.user
