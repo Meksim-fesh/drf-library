@@ -48,8 +48,6 @@ class AuthenticatedUserTest(TestCase):
         response = self.client.get(MANAGE_USER_URL)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(response.data)
-        print(serializer.data)
         self.assertEqual(response.data, serializer.data)
 
     def test_put_user(self):

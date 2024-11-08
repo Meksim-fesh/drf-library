@@ -12,7 +12,7 @@ DEFAULT_HEADERS = {
 }
 
 
-def send_notification(borrowing: Borrowing) -> requests.Response:
+def send_telegram_notification(borrowing: Borrowing) -> requests.Response:
     if not (TELEGRAM_TOKEN and USER_TO_SEND_NOTIFICATION_ID):
         return
 
