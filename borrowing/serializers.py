@@ -70,8 +70,8 @@ class BorrowingCreateSerializer(BorrowingSerializer):
         )
         read_only_fields = ("borrow_date", "user")
 
-    def get_checkout_url(self, obj):
-        response = create_checkout_session(obj)
+    def get_checkout_url(self, borrowing: Borrowing) -> str:
+        response = create_checkout_session(borrowing)
         return response["url"]
 
     def validate(self, attrs):
