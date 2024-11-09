@@ -99,6 +99,10 @@ class PaymentListView(generics.ListAPIView):
     ).prefetch_related("borrowing__user", "borrowing__book")
     serializer_class = PaymentListSerializer
 
+    def get(self, request, *args, **kwargs):
+        """Returns list of all Payment instances"""
+        return super().get(request, *args, **kwargs)
+
 
 class PaymentDetailView(generics.RetrieveAPIView):
     queryset = Payment.objects.select_related(
@@ -106,13 +110,22 @@ class PaymentDetailView(generics.RetrieveAPIView):
     ).prefetch_related("borrowing__user", "borrowing__book")
     serializer_class = PaymentDetailSerializer
 
+    def get(self, request, *args, **kwargs):
+        """Returns detail info about an instance of Payment model"""
+        return super().get(request, *args, **kwargs)
+
 
 class PaymentSuccessView(generics.GenericAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSuccessCancelSerializer
 
     def patch(self, request, *args, **kwargs):
-
+        """
+        This endpoint is a redirect from a stripe checkout page
+        (only if the payment was successful).\n
+        Change the payment status from 'Pending' to 'Paid'.
+        Sends response string 'Success' and status 200
+        """
         instance = self.get_object()
         instance.status = "Paid"
         instance.save()
@@ -125,9 +138,15 @@ class PaymentCancelView(generics.GenericAPIView):
     serializer_class = PaymentSuccessCancelSerializer
 
     def get(self, request, *args, **kwargs) -> Response:
-
+        """
+        This endpoint is a redirect from a stripe checkout page
+        (only if the payment was cancelled).\n
+        Sends response string
+        'Payment was cancelled. You can try to pay again within 24 hours.'
+        and status 402
+        """
         data_str = (
-            "Payment was canceld. You can try to pay again within 24 hours."
+            "Payment was cancelled. You can try to pay again within 24 hours."
         )
 
         return Response(
