@@ -143,7 +143,7 @@ class PaymentCancelView(generics.GenericAPIView):
         (only if the payment was cancelled).\n
         Sends response string
         'Payment was cancelled. You can try to pay again within 24 hours.'
-        and status 402
+        and status 200
         """
         data_str = (
             "Payment was cancelled. You can try to pay again within 24 hours."
@@ -151,5 +151,5 @@ class PaymentCancelView(generics.GenericAPIView):
 
         return Response(
             data=data_str,
-            status=status.HTTP_402_PAYMENT_REQUIRED
+            status=status.HTTP_200_OK,
         )
