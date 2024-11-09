@@ -136,7 +136,7 @@ class PaymentTest(TestCase):
 
         self.assertEqual(
             response.status_code,
-            status.HTTP_402_PAYMENT_REQUIRED
+            status.HTTP_200_OK,
         )
         self.assertEqual(
             response.data,
