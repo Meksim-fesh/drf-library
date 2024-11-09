@@ -57,7 +57,7 @@ pip install -r requirements.txt
 Rename the `.env.example` file to `.env` and set your environment variables:
 
 - For Telegram notification: *You need to create own telegram bot and obtain a token and own id.*
-- For Stripe: *You need to create an account
+- For Stripe: *You need to create an account*
 
 ```
 SECRET_KEY=your-secret-key
