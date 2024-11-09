@@ -28,6 +28,21 @@ class BorrowingListCreateView(generics.ListCreateAPIView):
 
         return BorrowingSerializer
 
+    def get(self, request, *args, **kwargs):
+        """Returns list of all Borrowing instances"""
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Creates an instance of Borrowing model.\n
+        Calls send_telegram_notification() method that sends notification
+        via telegram bot.\n
+        Calls create_checkout_session() to create stripe
+        payment session and returns checkout session url.\n
+        Decreases a borrowed book inventory by 1 (default quantity)
+        """
+        return super().post(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
 
@@ -38,10 +53,44 @@ class BorrowingRetrieveView(generics.RetrieveUpdateAPIView):
     ).prefetch_related("payments")
     serializer_class = BorrowingDetailSerializer
 
+    def get(self, request, *args, **kwargs):
+        """Returns detail info about an instance of Borrowing model"""
+        return super().get(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        """
+        Updates info about an instance of Borrowing model
+        (requires all fields to be provided)
+        """
+        return super().put(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        """
+        Updates info about an instance of Borrowing model
+        (does not require all fields to be provided)
+        """
+        return super().patch(request, *args, **kwargs)
+
 
 class BorrowingReturnView(generics.UpdateAPIView):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingReturnSerializer
+
+    def put(self, request, *args, **kwargs):
+        """
+        (The same as patch version)\n
+        Update actual_return_date to today`s date.\n
+        Increases a borrowed book inventory by 1 (default quantity).
+        """
+        return super().put(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        """
+        (The same as put version)\n
+        Update actual_return_date to today`s date.\n
+        Increases a borrowed book inventory by 1 (default quantity).
+        """
+        return super().patch(request, *args, **kwargs)
 
 
 class PaymentListView(generics.ListAPIView):
@@ -50,6 +99,10 @@ class PaymentListView(generics.ListAPIView):
     ).prefetch_related("borrowing__user", "borrowing__book")
     serializer_class = PaymentListSerializer
 
+    def get(self, request, *args, **kwargs):
+        """Returns list of all Payment instances"""
+        return super().get(request, *args, **kwargs)
+
 
 class PaymentDetailView(generics.RetrieveAPIView):
     queryset = Payment.objects.select_related(
@@ -57,13 +110,22 @@ class PaymentDetailView(generics.RetrieveAPIView):
     ).prefetch_related("borrowing__user", "borrowing__book")
     serializer_class = PaymentDetailSerializer
 
+    def get(self, request, *args, **kwargs):
+        """Returns detail info about an instance of Payment model"""
+        return super().get(request, *args, **kwargs)
+
 
 class PaymentSuccessView(generics.GenericAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSuccessCancelSerializer
 
     def patch(self, request, *args, **kwargs):
-
+        """
+        This endpoint is a redirect from a stripe checkout page
+        (only if the payment was successful).\n
+        Change the payment status from 'Pending' to 'Paid'.
+        Sends response string 'Success' and status 200
+        """
         instance = self.get_object()
         instance.status = "Paid"
         instance.save()
@@ -76,9 +138,15 @@ class PaymentCancelView(generics.GenericAPIView):
     serializer_class = PaymentSuccessCancelSerializer
 
     def get(self, request, *args, **kwargs) -> Response:
-
+        """
+        This endpoint is a redirect from a stripe checkout page
+        (only if the payment was cancelled).\n
+        Sends response string
+        'Payment was cancelled. You can try to pay again within 24 hours.'
+        and status 402
+        """
         data_str = (
-            "Payment was canceld. You can try to pay again within 24 hours."
+            "Payment was cancelled. You can try to pay again within 24 hours."
         )
 
         return Response(
