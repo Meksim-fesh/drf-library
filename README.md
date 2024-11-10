@@ -31,7 +31,7 @@ A simple API service for managing and borrowing books from a library.
 - View the API documentation and schema via */api/doc/swagger/* or */api/doc/redoc/*.
 - Access the admin panel at */admin/* to manage all the models.
 
-## How to Launch the Project
+## How to Launch the Project without Docker
 
 ### 1. Clone the Repository
 
@@ -91,6 +91,53 @@ python manage.py createsuperuser
 ```
 python manage.py runserver
 ```
+
+### Using SQLite3
+
+To use SQLite3 db you need to change following lines in `settings.py` file
+
+from:
+
+```
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ["POSTGRES_DB"],
+        "USER": os.environ["POSTGRES_USER"],
+        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+        "HOST": os.environ["POSTGRES_HOST"],
+        "PORT": os.environ["POSTGRES_PORT"],
+    }
+}
+```
+
+to:
+
+```
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+```
+
+## How to Launch the Project With Docker
+
+### 1. Go Through Steps 1-5 Above
+
+### 2. Build the Container
+
+```
+docker-compose build
+```
+
+### 3. Start the Container
+
+```
+docker-compose up
+```
+
 ## How to Gain an Access
 
 ### 1. Create User
