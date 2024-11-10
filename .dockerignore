@@ -1,0 +1,5 @@
+.vscode
+.github
+venv
+Dockerfile
+docker-compose.yaml
