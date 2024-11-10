@@ -58,6 +58,7 @@ Rename the `.env.example` file to `.env` and set your environment variables:
 
 - For Telegram notification: *You need to create own telegram bot and obtain a token and own id.*
 - For Stripe: *You need to create an account*
+- For PostgreSQL: *You need to create a PostgreSQL local database*
 
 ```
 SECRET_KEY=your-secret-key
@@ -65,6 +66,12 @@ DEBUG=True
 TELEGRAM_BOT_TOKEN=your-telegram-bot-token
 TELEGRAM_USER_ID=your-telegram-user-id
 STRIPE_API_KEY=your-stripe-api-key
+POSTGRES_PASSWORD=your-db-password
+POSTGRES_USER=your-db-user
+POSTGRES_DB=your-db-db
+POSTGRES_HOST=your-db-host
+POSTGRES_PORT=your-db-port
+PGDATA=/var/lib/postgresql/data
 ```
 
 ### 5. Apply Migrations
